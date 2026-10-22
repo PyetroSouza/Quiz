@@ -1,5 +1,6 @@
 package com.example.quiz
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.quiz.screens.HomeScreen
+import com.example.quiz.screens.NomeJogadorScreen
 import com.example.quiz.screens.QuizScreen
 import com.example.quiz.ui.theme.QuizTheme
 
@@ -34,15 +36,31 @@ class MainActivity : ComponentActivity() {
                         startDestination = "home",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable ("home"){
+                        composable("home") {
                             HomeScreen(
                                 onComecar = {
-                                    navController.navigate("quiz")
+                                    navController.navigate("nome")
                                 }
                             )
                         }
-                        composable ("quiz"){
-                            QuizScreen(navController= navController)
+
+                        composable("nome") {
+                            NomeJogadorScreen(
+                                onIniciarQuiz = { nome ->
+                                    navController.navigate("quiz/${Uri.encode(nome)}")
+                                }
+                            )
+                        }
+
+                        composable("quiz/{nome}") { backStackEntry ->
+                            val nome = backStackEntry.arguments
+                                ?.getString("nome")
+                                .orEmpty()
+
+                            QuizScreen(
+                                navController = navController,
+                                nomeJogador = nome
+                            )
                         }
                     }
                 }
@@ -50,3 +68,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

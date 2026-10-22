@@ -22,9 +22,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TelaFinalQuiz(
+    nomeJogador: String,
     pontuacao: Int,
     totalPerguntas: Int,
-    onJogarNovamente: () -> Unit
+    onJogarNovamente: () -> Unit,
+
 ) {
     Column(
         modifier = Modifier
@@ -35,7 +37,7 @@ fun TelaFinalQuiz(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "BOM TRABALHO!",
+            text = "BOM TRABALHO, $nomeJogador!",
             color = Color(0xFFFFE81F),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold

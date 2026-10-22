@@ -34,13 +34,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.quiz.R
+import com.example.quiz.components.BotaoAlternativa
+import com.example.quiz.components.CardPergunta
+import com.example.quiz.components.ContadorPerguntas
 import com.example.quiz.components.FeedbackResposta
 import com.example.quiz.components.TelaFinalQuiz
 import kotlinx.coroutines.delay
 
 @Composable
 fun QuizScreen(
-    modifier: Modifier = Modifier, navController: NavController,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    nomeJogador: String,
     viewModel: QuizViewModel = viewModel()
 ) {
     val perguntaAtual by viewModel.perguntaAtual.observeAsState()
@@ -53,6 +58,7 @@ fun QuizScreen(
 
     if (quizFinalizado) {
         TelaFinalQuiz(
+            nomeJogador = nomeJogador,
             pontuacao = pontuacao,
             totalPerguntas = viewModel.totalPerguntas,
             onJogarNovamente = {
@@ -83,77 +89,29 @@ fun QuizScreen(
                 .size(120.dp)
                 .padding(vertical = 16.dp)
         )
+        ContadorPerguntas(
+            indiceAtual = indicePergunta ?: 0,
+            totalPerguntas = viewModel.totalPerguntas
+        )
+        Spacer(modifier.height(20.dp))
 
-        Box(
-            modifier = Modifier
-                .height(50.dp)
-                .width(300.dp)
-                .background(Color(0xFF111827)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Pergunta de ${indicePergunta?.plus(1) ?: 1} de 3",
-                fontFamily = FontFamily(Font(R.font.roboto)),
-                fontWeight = FontWeight.W600,
-                fontSize = 20.sp,
-                color = Color(0xFFF3F4F6)
-            )
-        }
-
-        Spacer(modifier.height(30.dp))
-        Column(
-            modifier = Modifier
-                .width(350.dp)
-                .background(Color(0xFF111827))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
-                text = perguntaAtual!!.enunciado,
-                fontWeight = FontWeight.W600,
-                fontSize = 20.sp,
-                color = Color(0xFFF3F4F6),
-                textAlign = TextAlign.Center,
-                letterSpacing = 1.sp
-
-            )
-
-            Spacer(modifier.height(5.dp))
-
-            perguntaAtual!!.opcoes.forEach { opcaoText ->
-                Button(
-                    onClick = {
-                        viewModel.verificarResposta(opcaoText)
-                    },
-                    enabled = respostaCorreta == null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF1E2937)
-                    ),
-                ) {
-                    Text(
-                        text = opcaoText,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp),
-                        fontFamily = FontFamily(Font(R.font.roboto))
-                    )
-                }
+        CardPergunta(
+            pergunta = perguntaAtual!!,
+            respostaCorreta = respostaCorreta,
+            aoResponder = { opcao ->
+                viewModel.verificarResposta(opcao)
             }
-            FeedbackResposta(respostaCorreta = respostaCorreta)
-        }
-
+        )
     }
 
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun QuizScreenPreview() {
     QuizScreen(
-        navController = rememberNavController()
+        navController = rememberNavController(),
+        nomeJogador = "bungas"
     )
 }
